@@ -1,20 +1,21 @@
 import streamlit as st
 import pandas as pd
-import pickle
 import numpy as np
+import xgboost as xgb
 st.set_page_config(layout="wide")
 
-# Load the trained model from a pickle file
+# Load the trained model from a JSON file
 @st.cache(allow_output_mutation=True)
 def load_model():
-    with open('xgboost_model_occupancy_rate.pkl', 'rb') as file:
-        model = pickle.load(file)
+    model = xgb.XGBRegressor()  # Change to XGBRegressor or XGBClassifier as needed
+    model.load_model('xgboost_model_occupancy_rate.json')  # Adjust the file name if needed
     return model
 
 def load_model2():
-    with open('xgboost_model_adr.pkl', 'rb') as file:
-        model = pickle.load(file)
+    model = xgb.XGBRegressor()  # Change to XGBRegressor or XGBClassifier as needed
+    model.load_model('xgboost_model_adr.json')  # Adjust the file name if needed
     return model
+
 model_occupancy = load_model()
 model_adr = load_model2()
 
