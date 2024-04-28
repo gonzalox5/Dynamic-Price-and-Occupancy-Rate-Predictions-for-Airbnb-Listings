@@ -1,3 +1,4 @@
+Pillow
 geopy
 openpyxl
 pickle-mixin
