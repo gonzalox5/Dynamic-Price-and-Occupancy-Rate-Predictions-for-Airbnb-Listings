@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import xgboost as xgb
+import pickle
 
 
 # Load the trained model from a pickle file
