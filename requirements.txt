@@ -6,3 +6,4 @@ pickle-mixin
 scikit-learn
 xgboost
 catboost
+openpyxl
