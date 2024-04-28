@@ -34,7 +34,7 @@ def display_title_with_local_logo():
     
     # Display the logo in the first column
     with col1:
-        st.image(logo, width=60)  # Adjust width to suit your design needs
+        st.image(logo, width=100)  # Adjust width to suit your design needs
     
     # Display the title in the second column
     with col2:
@@ -138,7 +138,6 @@ if model_choice == 'Occupancy Rate':
 
     # Main form
     with st.form("property_details"):
-        st.title("Property Management Dashboard", anchor=None)
 
         # Initialize a dictionary to hold inputs
         property_inputs = {}
