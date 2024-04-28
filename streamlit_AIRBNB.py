@@ -4,6 +4,7 @@ import numpy as np
 import xgboost as xgb
 import pickle
 import pickle_mixin
+!pip install openpyxl
 import openpyxl
 # Load the trained model from a pickle file
 @st.cache_resource()
