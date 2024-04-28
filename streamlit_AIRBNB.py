@@ -6,6 +6,7 @@ import xgboost as xgb
 import pickle
 import pickle_mixin
 import geopy
+st.set_page_config(layout="wide")
 
 # Load the trained model from a pickle file
 @st.cache_resource()
