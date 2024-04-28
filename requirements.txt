@@ -3,7 +3,7 @@ pickle-mixin
 numpy
 pandas
 streamlit
-openpyxl
+
 scikit-learn
 xgboost
 catboost
