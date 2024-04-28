@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 import pickle
-
+import pickle_mixin
 
 # Load the trained model from a pickle file
 @st.cache_resource()
