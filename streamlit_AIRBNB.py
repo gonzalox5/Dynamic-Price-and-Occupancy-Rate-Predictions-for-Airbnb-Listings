@@ -634,4 +634,4 @@ else:
             # Example of usage within your Streamlit app
             if submit_details:
                 prediction = model.predict(prepared_df)  # Assuming `data_df` is prepared for prediction
-        display_feature_importance(model2, prepared_df)
+        display_feature_importance(model_adr, prepared_df)
