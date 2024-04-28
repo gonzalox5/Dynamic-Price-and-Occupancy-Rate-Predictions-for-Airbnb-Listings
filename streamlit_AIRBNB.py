@@ -5,6 +5,7 @@ import numpy as np
 import xgboost as xgb
 import pickle
 import pickle_mixin
+import geopy
 
 # Load the trained model from a pickle file
 @st.cache_resource()
