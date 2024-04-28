@@ -7,15 +7,22 @@ st.set_page_config(layout="wide")
 # Load the trained model from a pickle file
 @st.cache(allow_output_mutation=True)
 def load_model():
-    with open('xgboost_model_occupancy_rate.pkl', 'rb') as file:
+    model_path = 'xgboost_model_occupancy_rate.pkl'
+    if not os.path.exists(model_path):
+        print(f"Model file not found: {model_path}")
+        return None  # Or handle the error as appropriate
+    with open(model_path, 'rb') as file:
         model = pickle.load(file)
     return model
 
 def load_model2():
-    with open('xgboost_model_adr.pkl', 'rb') as file:
+    model_path = 'xgboost_model_adr.pkl'
+    if not os.path.exists(model_path):
+        print(f"Model file not found: {model_path}")
+        return None  # Or handle the error as appropriate
+    with open(model_path, 'rb') as file:
         model = pickle.load(file)
     return model
-
 model_occupancy = load_model()
 model_adr = load_model2()
 
