@@ -615,23 +615,23 @@ else:
         """, unsafe_allow_html=True)
 
 
-        def display_feature_importance(model_adr, prepared_df):
-            # Get feature importances
-            importance = model_adr.get_booster().get_score(importance_type='weight')
-            importance_df = pd.DataFrame({
-            'Feature': importance.keys(),
-            'Importance': importance.values()
-            }).sort_values(by='Importance', ascending=False).head(10)  
+        # def display_feature_importance(model_adr, prepared_df):
+        #     # Get feature importances
+        #     importance = model_adr.get_booster().get_score(importance_type='weight')
+        #     importance_df = pd.DataFrame({
+        #     'Feature': importance.keys(),
+        #     'Importance': importance.values()
+        #     }).sort_values(by='Importance', ascending=False).head(10)  
         
-            # Display the feature importances
-            st.write("Key Features Influencing Your Listing's Performance:")
-            st.bar_chart(importance_df.set_index('Feature'))
+        #     # Display the feature importances
+        #     st.write("Key Features Influencing Your Listing's Performance:")
+        #     st.bar_chart(importance_df.set_index('Feature'))
         
-            # Optionally, give specific suggestions based on the importance
-            top_features = importance_df.head(3)['Feature'].tolist()
-            st.write(f"The top factors affecting your listing are: {', '.join(top_features)}. Consider optimizing these aspects to improve your results.")
+        #     # Optionally, give specific suggestions based on the importance
+        #     top_features = importance_df.head(3)['Feature'].tolist()
+        #     st.write(f"The top factors affecting your listing are: {', '.join(top_features)}. Consider optimizing these aspects to improve your results.")
         
-            # Example of usage within your Streamlit app
-            if submit_details:
-                prediction = model_adr.predict(prepared_df)  # Assuming `data_df` is prepared for prediction
-        display_feature_importance(model_adr, prepared_df)
+        #     # Example of usage within your Streamlit app
+        #     if submit_details:
+        #         prediction = model_adr.predict(prepared_df)  # Assuming `data_df` is prepared for prediction
+        # display_feature_importance(model_adr, prepared_df)
