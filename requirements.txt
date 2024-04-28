@@ -1,9 +1,9 @@
-numpy
-pandas
-streamlit
 pickle
 pickle-mixin
-scikit-learn
-xgboost
-catboost
-openpyxl
+numpy==1.21.2
+pandas==1.3.3
+streamlit==1.0.0
+openpyxl==3.0.7
+scikit-learn==0.24.2
+xgboost==1.4.2
+catboost==0.26
