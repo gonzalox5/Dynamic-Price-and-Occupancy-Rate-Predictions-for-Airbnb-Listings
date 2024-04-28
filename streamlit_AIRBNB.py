@@ -23,7 +23,29 @@ def load_model2():
 model_occupancy = load_model()
 model_adr = load_model2()
 
-st.title('Property Management Platform')
+from PIL import Image
+
+def display_title_with_local_logo():
+    # Load your logo image
+    logo = Image.open("airbnb_logo.png")  # Update the path if the logo is in a specific folder
+    
+    # Create columns for logo and title
+    col1, col2 = st.columns([1, 8])
+    
+    # Display the logo in the first column
+    with col1:
+        st.image(logo, width=60)  # Adjust width to suit your design needs
+    
+    # Display the title in the second column
+    with col2:
+        st.markdown("""
+            <h1 style="color: #FF5A5F; line-height: 60px;">Property Management Platform</h1>
+            """,
+            unsafe_allow_html=True
+        )
+
+# Call this function to display the styled title with logo
+display_title_with_local_logo()
 municipality_data = pd.read_excel("municipality_mapping.xlsx")
 municipality_data.set_index('Municipality_y', inplace=True)
 
