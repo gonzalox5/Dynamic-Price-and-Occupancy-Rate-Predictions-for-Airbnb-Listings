@@ -1,3 +1,4 @@
+openpyxl
 pickle-mixin
 numpy
 pandas
