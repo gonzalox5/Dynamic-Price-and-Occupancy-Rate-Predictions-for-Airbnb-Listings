@@ -3,20 +3,17 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 
-# @st.cache(allow_output_mutation=True)
+
+# Load the trained model from a pickle file
+@st.cache_resource()
 def load_model():
-    # Initialize an empty model with the right type
-    model = xgb.XGBRegressor()
-    # Load the model from a file
-    model.load_model('xgboost_model_occupancy_rate.json')  # Use the correct file path and extension
+    with open('xgboost_model_occupancy_rate.pkl', 'rb') as file:
+        model = pickle.load(file)
     return model
 
-@st.cache(allow_output_mutation=True)
 def load_model2():
-    # Initialize an empty model with the right type
-    model = xgb.XGBRegressor()
-    # Load the model from a file
-    model.load_model('xgboost_model_adr.json')  # Use the correct file path and extension
+    with open('xgboost_model_adr.pkl', 'rb') as file:
+        model = pickle.load(file)
     return model
 
 model_occupancy = load_model()
