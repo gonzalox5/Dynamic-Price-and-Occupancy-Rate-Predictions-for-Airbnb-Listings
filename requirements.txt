@@ -1,9 +1,7 @@
-pickle
 pickle-mixin
 numpy
 pandas
 streamlit
-
 scikit-learn
 xgboost
 catboost
