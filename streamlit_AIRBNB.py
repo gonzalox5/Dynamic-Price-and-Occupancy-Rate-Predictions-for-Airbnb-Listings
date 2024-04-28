@@ -619,9 +619,9 @@ else:
             # Get feature importances
             importance = model_adr.get_booster().get_score(importance_type='weight')
             importance_df = pd.DataFrame({
-                'Feature': importance.keys(),
-                'Importance': importance.values()
-            }).sort_values(by='Importance', ascending=False)
+            'Feature': importance.keys(),
+            'Importance': importance.values()
+            }).sort_values(by='Importance', ascending=False).head(10)  
         
             # Display the feature importances
             st.write("Key Features Influencing Your Listing's Performance:")
