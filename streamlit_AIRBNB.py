@@ -2,23 +2,25 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import xgboost as xgb
-st.set_page_config(layout="wide")
 
-# Load the trained model from a JSON file
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model = xgb.XGBRegressor()  # Change to XGBRegressor or XGBClassifier as needed
-    model.load_model('xgboost_model_occupancy_rate.json')  # Adjust the file name if needed
+    # Initialize an empty model with the right type
+    model = xgb.XGBRegressor()
+    # Load the model from a file
+    model.load_model('xgboost_model_occupancy_rate.json')  # Use the correct file path and extension
     return model
 
+@st.cache(allow_output_mutation=True)
 def load_model2():
-    model = xgb.XGBRegressor()  # Change to XGBRegressor or XGBClassifier as needed
-    model.load_model('xgboost_model_adr.json')  # Adjust the file name if needed
+    # Initialize an empty model with the right type
+    model = xgb.XGBRegressor()
+    # Load the model from a file
+    model.load_model('xgboost_model_adr.json')  # Use the correct file path and extension
     return model
 
 model_occupancy = load_model()
 model_adr = load_model2()
-
 
 st.title('Property Management Platform')
 municipality_data = pd.read_excel("municipality_mapping.xlsx")
