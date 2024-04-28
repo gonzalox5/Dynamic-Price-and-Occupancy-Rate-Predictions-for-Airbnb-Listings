@@ -1,3 +1,4 @@
+geopy
 openpyxl
 pickle-mixin
 numpy
