@@ -27,7 +27,7 @@ from PIL import Image
 
 def display_title_with_local_logo():
     # Load your logo image
-    logo = Image.open("airbnb_logo.png")  # Update the path if the logo is in a specific folder
+    logo = Image.open("airnbnb_logo.png")  # Update the path if the logo is in a specific folder
     
     # Create columns for logo and title
     col1, col2 = st.columns([1, 8])
