@@ -615,9 +615,9 @@ else:
         """, unsafe_allow_html=True)
 
 
-        def display_feature_importance(model2, prepared_df):
+        def display_feature_importance(model_adr, prepared_df):
             # Get feature importances
-            importance = model2.get_booster().get_score(importance_type='weight')
+            importance = model_adr.get_booster().get_score(importance_type='weight')
             importance_df = pd.DataFrame({
                 'Feature': importance.keys(),
                 'Importance': importance.values()
@@ -633,5 +633,5 @@ else:
         
             # Example of usage within your Streamlit app
             if submit_details:
-                prediction = model.predict(prepared_df)  # Assuming `data_df` is prepared for prediction
+                prediction = model_adr.predict(prepared_df)  # Assuming `data_df` is prepared for prediction
         display_feature_importance(model_adr, prepared_df)
