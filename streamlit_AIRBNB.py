@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 
-@st.cache(allow_output_mutation=True)
+# @st.cache(allow_output_mutation=True)
 def load_model():
     # Initialize an empty model with the right type
     model = xgb.XGBRegressor()
