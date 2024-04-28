@@ -1,7 +1,7 @@
 numpy
 pandas
 streamlit
-yfinance
+pickle
 pickle-mixin
 scikit-learn
 xgboost
