@@ -671,15 +671,14 @@ else:
         # Assuming property_inputs['property_subtype'] and property_inputs['month'] are defined elsewhere in your code
         # Filter the DataFrame based on property subtype and month
         df_aux = df_g2.loc[(df_g2["property_subtype"] == property_inputs['property_subtype']) & (df_g2["Month"] == property_inputs['month'])]
+
+        fig, ax = plt.subplots(1, 3, figsize=(18, 4))
         
-        # Plot scatterplot using seaborn
-        fig1, ax1 = plt.subplots(figsize=(8, 6))  # Adjust size of the figure
-        sns.scatterplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                        alpha=.5, palette="muted", data=df_aux, ax=ax1)
-        ax1.set_xlabel('Mean ADR room')
-        ax1.set_ylabel('Mean Occupancy Rate')
-        ax1.set_title('Scatterplot')
-        st.pyplot(fig1)
+        sns.scatterplot(ax=ax[0], x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
+                        sizes=(20, 200), alpha=.5, palette="muted", data=df_aux, ax=ax1)
+        ax[0].set_xlabel('Mean ADR room')
+        ax[0].set_ylabel('Mean Occupancy Rate')
+        ax[0].set_title('Scatterplot')
         
         # Perform Kernel Ridge Regression
         lb = 2
@@ -691,15 +690,12 @@ else:
         kr.fit(X=df_aux["Mean ADR room"].values.reshape(-1,1), y=df_aux["Mean Occupancy Rate"],
                sample_weight=df_aux["Observations per Bin"])
         
-        # Plot lineplot with kernel ridge regression prediction
-        fig2, ax2 = plt.subplots(figsize=(8, 6))  # Adjust size of the figure
-        sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
+        sns.relplot(ax=ax[1],x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
                     alpha=.5, palette="muted", height=6, data=df_aux, ax=ax2)
-        ax2.plot(grid, kr.predict(grid), linewidth=2)
-        ax2.set_xlabel('Mean ADR room')
-        ax2.set_ylabel('Mean Occupancy Rate')
-        ax2.set_title('Kernel Ridge Regression Prediction')
-        st.pyplot(fig2)
+        ax[1].plot(grid, kr.predict(grid), linewidth=2)
+        ax[1].set_xlabel('Mean ADR room')
+        ax[1].set_ylabel('Mean Occupancy Rate')
+        ax[1].set_title('Kernel Ridge Regression Prediction')
         
         # Calculate and display optimal solution
         ingresos = grid.reshape(1,-1) * kr.predict(grid)*30
@@ -711,13 +707,11 @@ else:
         # Additional plot
         ingresos_l = np.expm1(grid_l.reshape(1,-1)) * np.expm1(kr_l.predict(grid_l))*30
         
-        fig3, ax3 = plt.subplots(figsize=(8, 6))  # Adjust size of the figure
-        sns.lineplot(x=np.expm1(grid_l.reshape(1,-1)[0]), y=ingresos_l[0], 
+        sns.lineplot(ax=ax[2],x=np.expm1(grid_l.reshape(1,-1)[0]), y=ingresos_l[0], 
                      sizes=(40, 400), alpha=.5, palette="muted", ax=ax3)
-        ax3.set_xlabel('Grid')
-        ax3.set_ylabel('Ingresos')
-        ax3.set_title('Additional Plot')
-        st.pyplot(fig3)
+        ax[2].set_xlabel('Grid')
+        ax[2].set_ylabel('Ingresos')
+        ax[2].set_title('Additional Plot')
     
 
 
