@@ -673,13 +673,13 @@ else:
         df_aux = df_g2.loc[(df_g2["property_subtype"] == property_inputs['property_subtype']) & (df_g2["Month"] == property_inputs['month'])]
         
         # Plot scatterplot using seaborn
-        plt.figure(figsize=(8, 6))  # Adjust size of the figure
+        fig1, ax1 = plt.subplots(figsize=(8, 6))  # Adjust size of the figure
         sns.scatterplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                        alpha=.5, palette="muted", data=df_aux)
-        plt.xlabel('Mean ADR room')
-        plt.ylabel('Mean Occupancy Rate')
-        plt.title('Scatterplot')
-        st.pyplot()
+                        alpha=.5, palette="muted", data=df_aux, ax=ax1)
+        ax1.set_xlabel('Mean ADR room')
+        ax1.set_ylabel('Mean Occupancy Rate')
+        ax1.set_title('Scatterplot')
+        st.pyplot(fig1)
         
         # Perform Kernel Ridge Regression
         lb = 2
@@ -692,14 +692,14 @@ else:
                sample_weight=df_aux["Observations per Bin"])
         
         # Plot lineplot with kernel ridge regression prediction
-        plt.figure(figsize=(8, 6))  # Adjust size of the figure
+        fig2, ax2 = plt.subplots(figsize=(8, 6))  # Adjust size of the figure
         sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                    alpha=.5, palette="muted", height=6, data=df_aux)
-        plt.plot(grid, kr.predict(grid), linewidth=2)
-        plt.xlabel('Mean ADR room')
-        plt.ylabel('Mean Occupancy Rate')
-        plt.title('Kernel Ridge Regression Prediction')
-        st.pyplot()
+                    alpha=.5, palette="muted", height=6, data=df_aux, ax=ax2)
+        ax2.plot(grid, kr.predict(grid), linewidth=2)
+        ax2.set_xlabel('Mean ADR room')
+        ax2.set_ylabel('Mean Occupancy Rate')
+        ax2.set_title('Kernel Ridge Regression Prediction')
+        st.pyplot(fig2)
         
         # Calculate and display optimal solution
         ingresos = grid.reshape(1,-1) * kr.predict(grid)*30
@@ -711,14 +711,13 @@ else:
         # Additional plot
         ingresos_l = np.expm1(grid_l.reshape(1,-1)) * np.expm1(kr_l.predict(grid_l))*30
         
-        plt.figure(figsize=(8, 6))  # Adjust size of the figure
+        fig3, ax3 = plt.subplots(figsize=(8, 6))  # Adjust size of the figure
         sns.lineplot(x=np.expm1(grid_l.reshape(1,-1)[0]), y=ingresos_l[0], 
-                     sizes=(40, 400), alpha=.5, palette="muted")
-        plt.xlabel('Grid')
-        plt.ylabel('Ingresos')
-        plt.title('Additional Plot')
-        st.pyplot()
-
+                     sizes=(40, 400), alpha=.5, palette="muted", ax=ax3)
+        ax3.set_xlabel('Grid')
+        ax3.set_ylabel('Ingresos')
+        ax3.set_title('Additional Plot')
+        st.pyplot(fig3)
     
 
 
