@@ -670,6 +670,57 @@ else:
         df_g2 = pd.read_pickle('preprocessed_grouped_data.pkl')
 
 
+        import matplotlib.pyplot as plt
+    
+        df_aux = df_g2.loc[df_g2["property_subtype"]==property_inputs['property_subtype'] & df_g2["Month"]==property_inputs['month']]
+        plt.figure(t)
+        sns.scatterplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
+                alpha=.5, palette="muted",data=df_aux ).set_title(t)
+
+        # Plot miles per gallon against horsepower with other semantics
+        sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
+                    alpha=.5, palette="muted",
+                    height=6, data=df_aux)
+
+
+        from sklearn.svm import SVR
+        from sklearn.kernel_ridge import KernelRidge
+        from sklearn.model_selection import GridSearchCV
+        
+        lb = 2
+        ub = 400
+        
+        kr = GridSearchCV(KernelRidge(kernel="poly", degree=3), cv=10,
+            param_grid={"alpha": [100, 10, 1, 0.1, 0.001], "gamma": np.logspace(-5, 10, 1)},
+        )
+        
+        grid = np.r_[lb:ub:100j].reshape(-1,1)
+        
+        #kr = KernelRidge(kernel="rbf", gamma=10, degree=3)
+        kr.fit(X=df_aux["Mean ADR room"].values.reshape(-1,1), y=df_aux["Mean Occupancy Rate"],
+               sample_weight=df_aux["Observations per Bin"])
+        
+        sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
+                    alpha=.5, palette="muted",
+                    height=6, data=df_aux)
+        plt.plot(grid, kr.predict(grid), linewidth=2)
+        
+        ingresos = grid.reshape(1,-1) * kr.predict(grid)*30
+        
+        sns.lineplot(x=grid.reshape(1,-1)[0], y=ingresos[0], 
+                    sizes=(40, 400), alpha=.5, palette="muted")
+        
+        max_ingresos = max(ingresos[0])
+        x=grid.reshape(1,-1)[0]
+        best_price = x[ ingresos[0] >= max_ingresos ]
+        st.write("Solucion optima es: precio óptimo {} e ingreos maximos mes {}".format(best_price, max_ingresos))
+
+
+
+        
+    
+
+
 
         
         
