@@ -675,7 +675,7 @@ else:
         fig, ax = plt.subplots(1, 3, figsize=(18, 4))
         
         sns.scatterplot(ax=ax[0], x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                        sizes=(20, 200), alpha=.5, palette="muted", data=df_aux, ax=ax1)
+                        sizes=(20, 200), alpha=.5, palette="muted", data=df_aux)
         ax[0].set_xlabel('Mean ADR room')
         ax[0].set_ylabel('Mean Occupancy Rate')
         ax[0].set_title('Scatterplot')
@@ -691,7 +691,7 @@ else:
                sample_weight=df_aux["Observations per Bin"])
         
         sns.relplot(ax=ax[1],x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                    alpha=.5, palette="muted", height=6, data=df_aux, ax=ax2)
+                    alpha=.5, palette="muted", height=6, data=df_aux)
         ax[1].plot(grid, kr.predict(grid), linewidth=2)
         ax[1].set_xlabel('Mean ADR room')
         ax[1].set_ylabel('Mean Occupancy Rate')
@@ -708,7 +708,7 @@ else:
         ingresos_l = np.expm1(grid_l.reshape(1,-1)) * np.expm1(kr_l.predict(grid_l))*30
         
         sns.lineplot(ax=ax[2],x=np.expm1(grid_l.reshape(1,-1)[0]), y=ingresos_l[0], 
-                     sizes=(40, 400), alpha=.5, palette="muted", ax=ax3)
+                     sizes=(40, 400), alpha=.5, palette="muted")
         ax[2].set_xlabel('Grid')
         ax[2].set_ylabel('Ingresos')
         ax[2].set_title('Additional Plot')
