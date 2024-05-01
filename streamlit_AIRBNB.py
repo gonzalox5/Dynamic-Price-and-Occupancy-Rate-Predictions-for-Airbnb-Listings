@@ -675,13 +675,13 @@ else:
         df_aux = df_g2.loc[(df_g2["property_subtype"] == property_inputs['property_subtype']) & (df_g2["Month"] == property_inputs['month'])]
 
         # Plot scatterplot using seaborn
+        plt.figure(figsize=(8, 6))  # Adjust size of the figure
         sns.scatterplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
                         alpha=.5, palette="muted", data=df_aux)
         plt.xlabel('Mean ADR room')
         plt.ylabel('Mean Occupancy Rate')
         plt.title('Scatterplot')
         st.pyplot()
-
 
         from sklearn.svm import SVR
         from sklearn.kernel_ridge import KernelRidge
@@ -701,6 +701,7 @@ else:
                sample_weight=df_aux["Observations per Bin"])
         
        # Plot lineplot with kernel ridge regression prediction
+        plt.figure(figsize=(8, 6))  # Adjust size of the figure
         sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
                     alpha=.5, palette="muted", height=6, data=df_aux)
         plt.plot(grid, kr.predict(grid), linewidth=2)
@@ -708,18 +709,15 @@ else:
         plt.ylabel('Mean Occupancy Rate')
         plt.title('Kernel Ridge Regression Prediction')
         st.pyplot()
-
-                
+        
         # Calculate and display optimal solution
         ingresos = grid.reshape(1,-1) * kr.predict(grid)*30
         max_ingresos = max(ingresos[0])
         x = grid.reshape(1,-1)[0]
         best_price = x[ingresos[0] >= max_ingresos]
-        st.write("Solucion optima es: precio óptimo {} e ingreos maximos mes {}".format(best_price, max_ingresos))
-
-
-
+        st.write("Solucion optima es: precio óptimo {} e ingreos maximos mes {}".format(best_price, max_ingresos))    
         
+                
     
 
 
