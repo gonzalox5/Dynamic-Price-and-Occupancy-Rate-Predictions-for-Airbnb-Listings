@@ -665,15 +665,13 @@ else:
         from sklearn.model_selection import GridSearchCV
         import streamlit as st
         
-        # Load and prepare the data
         # Load preprocessed and grouped data
         df_g2 = pd.read_pickle('preprocessed_grouped_data.pkl')
-
-
-        import matplotlib.pyplot as plt
-    
+        
+        # Assuming property_inputs['property_subtype'] and property_inputs['month'] are defined elsewhere in your code
+        # Filter the DataFrame based on property subtype and month
         df_aux = df_g2.loc[(df_g2["property_subtype"] == property_inputs['property_subtype']) & (df_g2["Month"] == property_inputs['month'])]
-
+        
         # Plot scatterplot using seaborn
         plt.figure(figsize=(8, 6))  # Adjust size of the figure
         sns.scatterplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
@@ -682,25 +680,18 @@ else:
         plt.ylabel('Mean Occupancy Rate')
         plt.title('Scatterplot')
         st.pyplot()
-
-        from sklearn.svm import SVR
-        from sklearn.kernel_ridge import KernelRidge
-        from sklearn.model_selection import GridSearchCV
         
+        # Perform Kernel Ridge Regression
         lb = 2
         ub = 400
         
         kr = GridSearchCV(KernelRidge(kernel="poly", degree=3), cv=10,
-            param_grid={"alpha": [100, 10, 1, 0.1, 0.001], "gamma": np.logspace(-5, 10, 1)},
-        )
-        
+                          param_grid={"alpha": [100, 10, 1, 0.1, 0.001], "gamma": np.logspace(-5, 10, 1)})
         grid = np.r_[lb:ub:100j].reshape(-1,1)
-        
-        #kr = KernelRidge(kernel="rbf", gamma=10, degree=3)
         kr.fit(X=df_aux["Mean ADR room"].values.reshape(-1,1), y=df_aux["Mean Occupancy Rate"],
                sample_weight=df_aux["Observations per Bin"])
         
-       # Plot lineplot with kernel ridge regression prediction
+        # Plot lineplot with kernel ridge regression prediction
         plt.figure(figsize=(8, 6))  # Adjust size of the figure
         sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
                     alpha=.5, palette="muted", height=6, data=df_aux)
@@ -715,9 +706,19 @@ else:
         max_ingresos = max(ingresos[0])
         x = grid.reshape(1,-1)[0]
         best_price = x[ingresos[0] >= max_ingresos]
-        st.write("Solucion optima es: precio óptimo {} e ingreos maximos mes {}".format(best_price, max_ingresos))    
+        st.write("Solucion optima es: precio óptimo {} e ingresos maximos mes {}".format(best_price, max_ingresos))
         
-                
+        # Additional plot
+        ingresos_l = np.expm1(grid_l.reshape(1,-1)) * np.expm1(kr_l.predict(grid_l))*30
+        
+        plt.figure(figsize=(8, 6))  # Adjust size of the figure
+        sns.lineplot(x=np.expm1(grid_l.reshape(1,-1)[0]), y=ingresos_l[0], 
+                     sizes=(40, 400), alpha=.5, palette="muted")
+        plt.xlabel('Grid')
+        plt.ylabel('Ingresos')
+        plt.title('Additional Plot')
+        st.pyplot()
+
     
 
 
