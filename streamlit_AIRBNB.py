@@ -708,10 +708,10 @@ else:
         ingresos_l = np.expm1(grid_l.reshape(1,-1)) * np.expm1(kr_l.predict(grid_l))*30
         
         sns.lineplot(ax=ax[2],x=np.expm1(grid_l.reshape(1,-1)[0]), y=ingresos_l[0], 
-                     sizes=(40, 400), alpha=.5, palette="muted")
+                    sizes=(40, 400), alpha=.5, palette="muted")
         ax[2].set_xlabel('Grid')
-        ax[2].set_ylabel('Ingresos')
-        ax[2].set_title('Additional Plot')
+        ax[2].set_ylabel('Revenue')
+        ax[2].set_title('Revenue Maximization Curve')
     
 
 
