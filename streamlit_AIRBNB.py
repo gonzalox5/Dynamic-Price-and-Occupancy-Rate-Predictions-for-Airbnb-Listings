@@ -664,59 +664,71 @@ else:
         from sklearn.kernel_ridge import KernelRidge
         from sklearn.model_selection import GridSearchCV
         import streamlit as st
-
+        
         # Load and prepare the data
         # Load preprocessed and grouped data
-        df_g2 = pd.read_pickle('preprocessed_grouped_data.pkl')
+        df = pd.read_pickle('preprocessed_grouped_data.pkl')
         
-        # Apply filters by month and property subtype
-        df_aux = df_g2[(df_g2['property_subtype'] == property_inputs['property_subtype']) & (df_g2['label1k'].mod(12) == property_inputs['month'])]
+        # Define function for preprocessing data
+        def preprocess_data(df, month, max_adr_room):
+            df_filtered = df.loc[(df['adr_usd'] > 1) & (df['occupancy_rate'] > 0) & (df['occupancy_rate'] < 1) & (df['date_in'].dt.month == month)]
+            df_filtered['adr_room'] = df_filtered['adr_usd'] / df_filtered['n_rooms']
+            df_filtered = df_filtered.loc[df_filtered['adr_room'] <= max_adr_room]
+            df_filtered[['occupancy_rate_log', 'adr_usd_log', 'adr_room_log', 'n_rooms_log', 'n_bookings_log']] = np.log1p(df_filtered[['occupancy_rate', 'adr_usd', 'adr_room', 'n_rooms', 'n_bookings']])
+            return df_filtered
+        
+        # Define function for grouping data
+        def group_data(df):
+            df["labels"] = pd.cut(df["adr_room"], bins=1000, labels=False)
+            df_grouped = df.groupby(by=["property_subtype", "labels"]).agg({"adr_room": "mean", "occupancy_rate": ["mean", "count"], "adr_room_log": "mean", "occupancy_rate_log": "mean"}).reset_index()
+            df_grouped.columns = ["property_subtype", "labels", "Mean ADR room", "Mean Occupancy Rate", "Observations per Bin", "Mean ADR room log", "Mean Occupancy Rate log"]
+            return df_grouped
+        
+        # Define function for plotting
+        def plot_data(df, property_subtype):
+            df_aux = df.loc[df["property_subtype"] == property_subtype]
+            sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin", alpha=.5, palette="muted", height=6, data=df_aux)
+        
+        # Define function for modeling
+        def model_data(df_aux):
+            lb = 2
+            ub = 400
+            kr = GridSearchCV(KernelRidge(kernel="poly", degree=3), cv=10, param_grid={"alpha": [100, 10, 1, 0.1, 0.001], "gamma": np.logspace(-5, 10, 1)})
+            grid = np.r_[lb:ub:100j].reshape(-1,1)
+            kr.fit(X=df_aux["Mean ADR room"].values.reshape(-1,1), y=df_aux["Mean Occupancy Rate"], sample_weight=df_aux["Observations per Bin"])
+            plt.plot(grid, kr.predict(grid), linewidth=2)
+            ingresos = grid.reshape(1,-1) * kr.predict(grid)*30
+            max_ingresos = max(ingresos[0])
+            x = grid.reshape(1,-1)[0]
+            best_price = x[ingresos[0] >= max_ingresos]
+            return best_price, max_ingresos
+        
+        # Streamlit app
+        def main():
+            st.title("Your Streamlit App Title")
+        
+            # Sidebar inputs
+            property_subtype = st.sidebar.text_input("Enter Property Subtype")
+            month = st.sidebar.number_input("Enter Month", min_value=1, max_value=12)
+            max_adr_room = st.sidebar.number_input("Enter Maximum ADR Room")
+        
+            # Preprocess data
+            df_filtered = preprocess_data(df, month, max_adr_room)
+        
+            # Group data
+            df_grouped = group_data(df_filtered)
+        
+            # Plot data
+            plot_data(df_grouped, property_subtype)
+            st.pyplot()
+        
+            # Model data
+            best_price, max_income = model_data(df_grouped)
+            st.write("Optimal price:", best_price)
+            st.write("Max income per month:", max_income)
+        
+        if __name__ == "__main__":
+            main()
 
-        # Plot setup
-        fig, ax = plt.subplots(1, 3, figsize=(18, 4))
 
-        # First plot: Scatter plot for price elasticity
-        sns.scatterplot(ax=ax[0], x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                        sizes=(20, 200), alpha=0.5, palette="viridis", data=df_aux)
-        ax[0].set_title("Price Elasticity Analysis")
 
-        # Second plot: Regression Curve with Data Points
-        if not df_aux.empty:
-            kr = GridSearchCV(KernelRidge(kernel="poly", degree=3), cv=10,
-                            param_grid={"alpha": [100, 10, 1, 0.1, 0.001], "gamma": np.logspace(-5, 10, 1)})
-            grid = np.linspace(2, 400, 100).reshape(-1,1)
-            kr.fit(X=df_aux["Mean ADR room"].values.reshape(-1,1), y=df_aux["Mean Occupancy Rate"],
-                sample_weight=df_aux["Observations per Bin"])
-            sns.scatterplot(ax=ax[1], x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                            sizes=(20, 200), alpha=0.5, palette="muted", data=df_aux)
-            ax[1].plot(grid, kr.predict(grid), color='red', linewidth=2)
-            ax[1].set_title("Regression Analysis with Data Points")
-
-            # Calculate and format optimal price and revenue
-            predicted_occupancy = kr.predict(grid)
-            revenues = grid.reshape(1,-1)[0] * predicted_occupancy * 30  # Assuming 30 days in a month
-            max_revenue = max(revenues)
-            best_price = grid.reshape(1,-1)[0][revenues == max_revenue][0]
-            formatted_best_price = "{:.2f}".format(best_price)
-            formatted_max_revenue = "{:.2f}".format(max_revenue)
-
-            # Create a styled prompt for the optimal price and maximum revenue output
-            st.write(f"""
-                <div style="background-color:#f0f0f0;padding:10px;border-radius:10px;">
-                    <h2 style="color:#1f77b4;">🏠 Optimal Pricing Recommendation</h2>
-                    <p style="font-size:20px;">
-                        The optimal price per room per night to maximize revenue is: 
-                        <span style="color:#ff7f0e;">${formatted_best_price}/night/person</span>
-                    </p>
-                    <p style="font-size:20px;">
-                        This price setting can potentially generate a maximum monthly revenue of:
-                        <span style="color:#ff7f0e;">${formatted_max_revenue}</span>
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
-        # Third plot: Revenue Prediction
-        sns.lineplot(ax=ax[2], x=grid.reshape(1,-1)[0], y=revenues, alpha=0.5, color='purple')
-        ax[2].set_title("Revenue Prediction")
-
-        # Show the plots in Streamlit
-        st.pyplot(fig)
