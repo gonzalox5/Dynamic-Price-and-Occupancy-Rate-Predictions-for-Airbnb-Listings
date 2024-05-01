@@ -674,12 +674,13 @@ else:
     
         df_aux = df_g2.loc[(df_g2["property_subtype"] == property_inputs['property_subtype']) & (df_g2["Month"] == property_inputs['month'])]
 
+        # Plot scatterplot using seaborn
         sns.scatterplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                alpha=.5, palette="muted",data=df_aux )
-        # Plot miles per gallon against horsepower with other semantics
-        sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                    alpha=.5, palette="muted",
-                    height=6, data=df_aux)
+                        alpha=.5, palette="muted", data=df_aux)
+        plt.xlabel('Mean ADR room')
+        plt.ylabel('Mean Occupancy Rate')
+        plt.title('Scatterplot')
+        st.pyplot()
 
 
         from sklearn.svm import SVR
@@ -699,19 +700,21 @@ else:
         kr.fit(X=df_aux["Mean ADR room"].values.reshape(-1,1), y=df_aux["Mean Occupancy Rate"],
                sample_weight=df_aux["Observations per Bin"])
         
+       # Plot lineplot with kernel ridge regression prediction
         sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                    alpha=.5, palette="muted",
-                    height=6, data=df_aux)
+                    alpha=.5, palette="muted", height=6, data=df_aux)
         plt.plot(grid, kr.predict(grid), linewidth=2)
-        
+        plt.xlabel('Mean ADR room')
+        plt.ylabel('Mean Occupancy Rate')
+        plt.title('Kernel Ridge Regression Prediction')
+        st.pyplot()
+
+                
+        # Calculate and display optimal solution
         ingresos = grid.reshape(1,-1) * kr.predict(grid)*30
-        
-        sns.lineplot(x=grid.reshape(1,-1)[0], y=ingresos[0], 
-                    sizes=(40, 400), alpha=.5, palette="muted")
-        
         max_ingresos = max(ingresos[0])
-        x=grid.reshape(1,-1)[0]
-        best_price = x[ ingresos[0] >= max_ingresos ]
+        x = grid.reshape(1,-1)[0]
+        best_price = x[ingresos[0] >= max_ingresos]
         st.write("Solucion optima es: precio óptimo {} e ingreos maximos mes {}".format(best_price, max_ingresos))
 
 
