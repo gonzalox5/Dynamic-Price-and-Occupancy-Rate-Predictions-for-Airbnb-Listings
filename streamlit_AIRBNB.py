@@ -667,68 +667,9 @@ else:
         
         # Load and prepare the data
         # Load preprocessed and grouped data
-        df = pd.read_pickle('preprocessed_grouped_data.pkl')
-        
-        # Define function for preprocessing data
-        def preprocess_data(df, month, max_adr_room):
-            df_filtered = df.loc[(df['adr_usd'] > 1) & (df['occupancy_rate'] > 0) & (df['occupancy_rate'] < 1) & (df['date_in'].dt.month == month)]
-            df_filtered['adr_room'] = df_filtered['adr_usd'] / df_filtered['n_rooms']
-            df_filtered = df_filtered.loc[df_filtered['adr_room'] <= max_adr_room]
-            df_filtered[['occupancy_rate_log', 'adr_usd_log', 'adr_room_log', 'n_rooms_log', 'n_bookings_log']] = np.log1p(df_filtered[['occupancy_rate', 'adr_usd', 'adr_room', 'n_rooms', 'n_bookings']])
-            return df_filtered
-        
-        # Define function for grouping data
-        def group_data(df):
-            df["labels"] = pd.cut(df["adr_room"], bins=1000, labels=False)
-            df_grouped = df.groupby(by=["property_subtype", "labels"]).agg({"adr_room": "mean", "occupancy_rate": ["mean", "count"], "adr_room_log": "mean", "occupancy_rate_log": "mean"}).reset_index()
-            df_grouped.columns = ["property_subtype", "labels", "Mean ADR room", "Mean Occupancy Rate", "Observations per Bin", "Mean ADR room log", "Mean Occupancy Rate log"]
-            return df_grouped
-        
-        # Define function for plotting
-        def plot_data(df, property_subtype):
-            df_aux = df.loc[df["property_subtype"] == property_subtype]
-            sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin", alpha=.5, palette="muted", height=6, data=df_aux)
-        
-        # Define function for modeling
-        def model_data(df_aux):
-            lb = 2
-            ub = 400
-            kr = GridSearchCV(KernelRidge(kernel="poly", degree=3), cv=10, param_grid={"alpha": [100, 10, 1, 0.1, 0.001], "gamma": np.logspace(-5, 10, 1)})
-            grid = np.r_[lb:ub:100j].reshape(-1,1)
-            kr.fit(X=df_aux["Mean ADR room"].values.reshape(-1,1), y=df_aux["Mean Occupancy Rate"], sample_weight=df_aux["Observations per Bin"])
-            plt.plot(grid, kr.predict(grid), linewidth=2)
-            ingresos = grid.reshape(1,-1) * kr.predict(grid)*30
-            max_ingresos = max(ingresos[0])
-            x = grid.reshape(1,-1)[0]
-            best_price = x[ingresos[0] >= max_ingresos]
-            return best_price, max_ingresos
-        
-        # Streamlit app
-        def main():
-            st.title("Your Streamlit App Title")
-        
-            # Sidebar inputs
-            property_subtype = st.sidebar.text_input("Enter Property Subtype")
-            month = st.sidebar.number_input("Enter Month", min_value=1, max_value=12)
-            max_adr_room = st.sidebar.number_input("Enter Maximum ADR Room")
-        
-            # Preprocess data
-            df_filtered = preprocess_data(df, month, max_adr_room)
-        
-            # Group data
-            df_grouped = group_data(df_filtered)
-        
-            # Plot data
-            plot_data(df_grouped, property_subtype)
-            st.pyplot()
-        
-            # Model data
-            best_price, max_income = model_data(df_grouped)
-            st.write("Optimal price:", best_price)
-            st.write("Max income per month:", max_income)
-        
-        if __name__ == "__main__":
-            main()
+        df_g2 = pd.read_pickle('preprocessed_grouped_data.pkl')
 
 
 
+        
+        
