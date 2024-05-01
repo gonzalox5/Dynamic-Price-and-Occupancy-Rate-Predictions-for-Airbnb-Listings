@@ -666,20 +666,11 @@ else:
         import streamlit as st
 
         # Load and prepare the data
-        df = pd.read_csv('C:/Users/Gonzalo/TFG/bq-results-20240116-153937-1705419608751.csv')
-        cols2use = ['occupancy_rate', 'adr_usd', 'n_rooms', 'n_bookings', 'property_subtype', 'date_in']
-        df['date_in'] = pd.to_datetime(df['date_in'])
-        df = df[df['date_in'].dt.month == property_inputs['month']]
-        df = df.loc[(df['adr_usd'] > 1) & (df['occupancy_rate'] > 0) & (df['occupancy_rate'] < 1)]
-        df['adr_room'] = df['adr_usd'] / df['n_rooms']
-        df = df[df['adr_room'] <= 400]
-
-        # Log transformations and grouping
-        df[['occupancy_rate_log', 'adr_usd_log', 'adr_room_log', 'n_rooms_log', 'n_bookings_log']] = np.log1p(df[['occupancy_rate', 'adr_usd', 'adr_room', 'n_rooms', 'n_bookings']])
-        df['label1k'] = df.index // 500
-        df_g2 = df.groupby(by=["property_subtype", "label1k"]).agg({"adr_room": "mean", "occupancy_rate": ["mean", "count"], "adr_room_log": "mean", "occupancy_rate_log": "mean"}).reset_index()
-        df_g2.columns = ["property_subtype", "label1k", "Mean ADR room", "Mean Occupancy Rate", "Observations per Bin", "Mean ADR room log", "Mean Occupancy Rate log"]
-        df_aux = df_g2[df_g2['property_subtype'] == property_inputs['property_subtype']]
+        # Load preprocessed and grouped data
+        df_g2 = pd.read_pickle('preprocessed_grouped_data.pkl')
+        
+        # Apply filters by month and property subtype
+        df_aux = df_g2[(df_g2['property_subtype'] == property_inputs['property_subtype']) & (df_g2['label1k'].dt.month == property_inputs['month'])]
 
         # Plot setup
         fig, ax = plt.subplots(1, 3, figsize=(18, 4))
