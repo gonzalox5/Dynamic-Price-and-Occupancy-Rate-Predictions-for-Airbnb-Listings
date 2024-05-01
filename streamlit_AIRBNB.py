@@ -712,6 +712,8 @@ else:
         ax[2].set_xlabel('Grid')
         ax[2].set_ylabel('Revenue')
         ax[2].set_title('Revenue Maximization Curve')
+
+        st.pyplot(fig)
     
 
 
