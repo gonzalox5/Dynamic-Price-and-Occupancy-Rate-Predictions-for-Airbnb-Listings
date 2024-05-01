@@ -705,9 +705,9 @@ else:
         st.write("Solucion optima es: precio óptimo {} e ingresos maximos mes {}".format(best_price, max_ingresos))
         
         # Additional plot
-        ingresos_l = np.expm1(grid_l.reshape(1,-1)) * np.expm1(kr_l.predict(grid_l))*30
+        ingresos = grid.reshape(1,-1) * kr.predict(grid)*30
         
-        sns.lineplot(ax=ax[2],x=np.expm1(grid_l.reshape(1,-1)[0]), y=ingresos_l[0], 
+        sns.lineplot(ax=ax[2],x=grid.reshape(1,-1)[0], y=ingresos[0], 
                     sizes=(40, 400), alpha=.5, palette="muted")
         ax[2].set_xlabel('Grid')
         ax[2].set_ylabel('Revenue')
