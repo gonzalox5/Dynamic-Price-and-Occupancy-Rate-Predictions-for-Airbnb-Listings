@@ -675,8 +675,7 @@ else:
         df_aux = df_g2.loc[(df_g2["property_subtype"] == property_inputs['property_subtype']) & (df_g2["Month"] == property_inputs['month'])]
 
         sns.scatterplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
-                alpha=.5, palette="muted",data=df_aux ).set_title(t)
-
+                alpha=.5, palette="muted",data=df_aux )
         # Plot miles per gallon against horsepower with other semantics
         sns.relplot(x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
                     alpha=.5, palette="muted",
