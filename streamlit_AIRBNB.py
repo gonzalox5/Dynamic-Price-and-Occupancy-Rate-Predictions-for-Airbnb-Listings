@@ -670,7 +670,7 @@ else:
         df_g2 = pd.read_pickle('preprocessed_grouped_data.pkl')
         
         # Apply filters by month and property subtype
-        df_aux = df_g2[(df_g2['property_subtype'] == property_inputs['property_subtype']) & (df_g2['label1k'].dt.month == property_inputs['month'])]
+        df_aux = df_g2[(df_g2['property_subtype'] == property_inputs['property_subtype']) & (df_g2['label1k'].mod(12) == property_inputs['month'])]
 
         # Plot setup
         fig, ax = plt.subplots(1, 3, figsize=(18, 4))
