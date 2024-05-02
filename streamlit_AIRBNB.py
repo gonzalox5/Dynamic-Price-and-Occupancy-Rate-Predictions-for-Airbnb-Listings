@@ -798,7 +798,8 @@ elif model_choice == 'Predicting Price per Night':
             if not df_aux.empty:
                 kr = GridSearchCV(KernelRidge(kernel="poly", degree=3), cv=10,
                                 param_grid={"alpha": [100, 10, 1, 0.1, 0.001], "gamma": np.logspace(-5, 10, 1)})
-                grid = np.linspace(2, 400, 100).reshape(-1,1)
+                max_adr = df_aux["Mean ADR room"].max()
+                grid = np.linspace(2, max_adr, 100).reshape(-1,1)
                 kr.fit(X=df_aux["Mean ADR room"].values.reshape(-1,1), y=df_aux["Mean Occupancy Rate"],
                     sample_weight=df_aux["Observations per Bin"])
                 sns.scatterplot(ax=ax[1], x="Mean ADR room", y="Mean Occupancy Rate", size="Observations per Bin",
