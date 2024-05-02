@@ -720,51 +720,14 @@ elif model_choice == 'Predicting Price per Night':
             property_inputs = {}
 
             # Property Specifications Section
-            format_title("Property Specifications", color='#0c6596')
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                property_inputs['n_rooms'] = st.number_input('Number of Rooms', min_value=1, value=2)
-                property_inputs['n_baths'] = st.number_input('Number of Bathrooms', min_value=1, value=1)
-                property_inputs['max_guests'] = st.number_input('Maximum Guests', min_value=1, value=4)
-                property_inputs['min_stay'] = st.number_input('Minimum Stay (days)', min_value=1, value=1)
-                property_inputs['n_photos'] = st.number_input('Number of Photos', min_value=0, value=15)
-            
-            with col2:
-                property_inputs['property_type'] = st.selectbox("Property Type", ('multi_family', 'room', 'hotel', 'single_family', 'unknown'), index= 4)
-                property_inputs['property_subtype'] = st.selectbox("Property Subtype", ('flat', 'loft', 'unknown', 'special_house', 'detached_house', 'flat_house_room', 'hospitality_room', 'studio'), index=('flat', 'loft', 'unknown', 'special_house', 'detached_house', 'flat_house_room', 'hospitality_room', 'studio').index('flat_house_room'))
-                property_inputs['property_use'] = st.selectbox("Property Use", ('residential', 'unknown', 'hotel_hospitality'), index= 1)
-                property_inputs['amenities'] = st.multiselect("Select Amenities", ['Kitchen', 'Washer', 'TV', 'Essentials', 'Wireless Internet', 'Heating', 'AC', 'Pool', 'Hair-Dryer', 'Free Parking', 'Hot Water', 'Elevator', 'Laptop-Friendly'])
+            format_title("Property Type", color='#0c6596')
+            property_inputs['property_subtype'] = st.selectbox("Property Subtype", ('flat', 'loft', 'unknown', 'special_house', 'detached_house', 'flat_house_room', 'hospitality_room', 'studio'), index=('flat', 'loft', 'unknown', 'special_house', 'detached_house', 'flat_house_room', 'hospitality_room', 'studio').index('flat_house_room'))
 
             # Distinct Section for Month of Rental
             st.markdown("---")
             format_title("Rental Period", color='#d89614')
             month_name = st.selectbox("Select the rental month", list(months.keys()), index = list(months.keys()).index('August'))
             property_inputs['month'] = months[month_name]  # Translate month name to number
-
-
-            # Pricing and Availability Section
-            format_title("Pricing and Availability", color='#0c6596')
-
-
-            property_inputs['deposit_usd'] = st.number_input('Deposit (USD)', min_value=0.0, format="%.2f")
-            property_inputs['cleaning_fee_usd'] = st.number_input('Cleaning Fee (USD)', min_value=0.0, format="%.2f")
-            property_inputs['extra_people_fee_usd'] = st.number_input('Extra People Fee (USD)', min_value=0.0, format="%.2f")
-
-            # Rental History Section
-            format_title("Rental History - Last 12 Months", color='#0c6596')
-
-            # Rating and Policies Section
-            format_title("Rating and Policies", color='#0c6596')
-            col7, col8 = st.columns(2)
-            
-            with col7:
-                property_inputs['rating'] = st.slider('Rating (Last 12 Months)', min_value=0, max_value=100, value=60)
-            
-            with col8:
-                property_inputs['policy_category'] = st.selectbox("Policy Category", ['Flexible', 'Moderate', 'Strict'])
-                property_inputs['is_instantbookable'] = st.checkbox('Is Instantly Bookable')
-                property_inputs['is_superhost'] = st.checkbox('Is Superhost')
 
             # Fancy Submit Button
             st.markdown("---")
@@ -792,52 +755,8 @@ elif model_choice == 'Predicting Price per Night':
         if submit_details:
             # Construct the data dictionary from user inputs and fetched municipality info
             new_property_data = {
-                'n_rooms': property_inputs['n_rooms'],
-                'n_baths': property_inputs['n_baths'],
-                'max_guests': property_inputs['max_guests'],
-                'min_stay': property_inputs['min_stay'],
-                'n_photos': property_inputs['n_photos'],
-                'deposit_usd': property_inputs['deposit_usd'],
-                'cleaning_fee_usd': property_inputs['cleaning_fee_usd'],
-                'extra_people_fee_usd': property_inputs['extra_people_fee_usd'],
-                'is_instantbookable': 1 if property_inputs['is_instantbookable'] else 0,
-                'is_superhost': 1 if property_inputs['is_superhost'] else 0,
-                'property_type': property_inputs['property_type'],
                 'property_subtype': property_inputs['property_subtype'],
-                'property_use': property_inputs['property_use'],
-                'lat': municipality_info['lat'],
-                'lon': municipality_info['lon'],
-                # Demographic and geographic data from municipality
-                'Población residente (A)': municipality_info['Población residente (A)'],
-                'Población residente que se localiza durante el día en su área de residencia (B)': municipality_info['Población residente que se localiza durante el día en su área de residencia (B)'],
-                'Población residente encontrada durante el día en otra área (C)': municipality_info['Población residente encontrada durante el día en otra área (C)'],
-                'Población no residente que se localiza durante el día en esta área (D)': municipality_info['Población no residente que se localiza durante el día en esta área (D)'],
-                'Población total que se localiza durante el día en el área (E=B+D)': municipality_info['Población total que se localiza durante el día en el área (E=B+D)'],
-                'Saldo población entra y sale de esta área (F=D-C)': municipality_info['Saldo población entra y sale de esta área (F=D-C)'],
-                'Porcentaje de población residente que se localiza durante el día en su área de residencia (B*100/A)': municipality_info['Porcentaje de población residente que se localiza durante el día en su área de residencia (B*100/A)'],
-                'Porcentaje de población residente que sale de su área (C*100/A)': municipality_info['Porcentaje de población residente que sale de su área (C*100/A)'],
-                'Porcentaje de población no residente que se localiza durante el día en esta área (D*100/A)': municipality_info['Porcentaje de población no residente que se localiza durante el día en esta área (D*100/A)'],
-                'Cociente entre población total que se localiza durante el día y población residente (E*100/A)': municipality_info['Cociente entre población total que se localiza durante el día y población residente (E*100/A)'],
-                'Porcentaje de población que gana o pierde durante el día (F*100/A)': municipality_info['Porcentaje de población que gana o pierde durante el día (F*100/A)'],
-                'Month': property_inputs['month'],
-                # Map amenities to binary columns
-                'kitchen': 1 if 'Kitchen' in property_inputs['amenities'] else 0,
-                'washer': 1 if 'Washer' in property_inputs['amenities'] else 0,
-                'tv': 1 if 'TV' in property_inputs['amenities'] else 0,
-                'heating': 1 if 'Heating' in property_inputs['amenities'] else 0,
-                'ac': 1 if 'AC' in property_inputs['amenities'] else 0,
-                'essentials': 1 if 'Essentials' in property_inputs['amenities'] else 0,
-                'wireless_internet': 1 if 'Wireless Internet' in property_inputs['amenities'] else 0,
-                'hangers': 1 if 'Hangers' in property_inputs['amenities'] else 0,
-                'iron': 1 if 'Iron' in property_inputs['amenities'] else 0,
-                'pool': 1 if 'Pool' in property_inputs['amenities'] else 0,
-                'hair-dryer': 1 if 'Hair Dryer' in property_inputs['amenities'] else 0,
-                'free_parking': 1 if 'Free Parking' in property_inputs['amenities'] else 0,
-                'hot_water': 1 if 'Hot Water' in property_inputs['amenities'] else 0,
-                'elevator': 1 if 'Elevator' in property_inputs['amenities'] else 0,
-                'laptop-friendly': 1 if 'Laptop Friendly' in property_inputs['amenities'] else 0,
-                'rating': property_inputs['rating'],
-                'policy_category': property_inputs['policy_category'],
+                'Month': property_inputs['month']
             }
             # Convert the dictionary into a DataFrame
             new_property_df = pd.DataFrame([new_property_data])
