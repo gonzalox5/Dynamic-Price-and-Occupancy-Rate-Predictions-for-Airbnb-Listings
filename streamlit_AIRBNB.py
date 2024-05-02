@@ -880,7 +880,7 @@ elif model_choice == 'Predicting Price per Night':
             import streamlit as st
 
             # Load and prepare the data
-            df_g2 = pd.read_excel('df_g2.csv')
+            df_g2 = pd.read_excel('df_g2.xlsx')
             tipo_analizado ="flat_house_room"
 
             df_aux = df_g2.loc[df_g2["property_subtype"]== tipo_analizado]
