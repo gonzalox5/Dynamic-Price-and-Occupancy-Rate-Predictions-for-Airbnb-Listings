@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 import pickle
-# import pickle_mixin
+import pickle_mixin
 import geopy
 st.set_page_config(layout="wide")
 
