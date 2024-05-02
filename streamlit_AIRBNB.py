@@ -765,31 +765,6 @@ elif model_choice == 'Predicting Price per Night':
             import pandas as pd
             from geopy.distance import great_circle
 
-            # Load beaches data; assuming 'Latitude' and 'Longitude' columns exist in this data
-            df_beaches = pd.read_excel('df_beaches.xlsx')
-            # Function to calculate distance to the closest beach
-            def get_distance_to_closest_beach(lat, lon):
-                airbnb_location = (lat, lon)
-                closest_beach = min(
-                    df_beaches.itertuples(), 
-                    key=lambda beach: great_circle(airbnb_location, (beach.Latitude, beach.Longitude)).meters
-                )
-                distance_to_closest_beach = great_circle(airbnb_location, (closest_beach.Latitude, closest_beach.Longitude)).meters
-                return distance_to_closest_beach
-            # Assuming 'new_property_df' is your DataFrame with the new property details
-            # And it already includes 'lat' and 'lon' columns
-
-            # Calculate distance to the closest beach
-            new_property_df['distance_to_closest_beach'] = new_property_df.apply(
-                lambda row: get_distance_to_closest_beach(row['lat'], row['lon']), axis=1
-            )
-
-            # Determine if it is a coastal municipality (within 2000 meters of the nearest beach)
-            new_property_df['coastal_municipality'] = (new_property_df['distance_to_closest_beach'] < 2000).astype(int)
-            # Print the DataFrame to see all features including the newly added ones
-            new_property_df['Province'] = province
-            new_property_df['Municipality'] = selected_municipality
-            
             import pandas as pd
             import numpy as np
             import matplotlib.pyplot as plt
