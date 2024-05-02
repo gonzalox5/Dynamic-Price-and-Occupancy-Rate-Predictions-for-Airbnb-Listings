@@ -196,7 +196,7 @@ if model_choice == 'Estimating the Likelihood of Renting at a Specified Price pe
         col3, col4 = st.columns([3, 2])
         
         with col3:
-            if model_choice == 'Estimting the Likelihood of Renting at a Specified Price per Night':
+            if model_choice == 'Estimating the Likelihood of Renting at a Specified Price per Night':
                 property_inputs['adr_usd'] = st.number_input('Desired Price (USD)', min_value=0.0, format="%.2f", value=50.00)
             else:
                 # The 'value' parameter should directly set the default position of the slider within the provided range
@@ -745,35 +745,14 @@ elif model_choice == 'Predicting Price per Night':
 
             # Pricing and Availability Section
             format_title("Pricing and Availability", color='#0c6596')
-            col3, col4 = st.columns([3, 2])
-            
-            with col3:
-                if model_choice == 'Estimting the Likelihood of Renting at a Specified Price per Night':
-                    property_inputs['adr_usd'] = st.number_input('Desired Price (USD)', min_value=0.0, format="%.2f", value=50.00)
-                else:
-                    # The 'value' parameter should directly set the default position of the slider within the provided range
-                    property_inputs['occupancy_rate'] = st.slider('Desired Occupancy Rate', min_value=0.0, max_value=1.0, value=0.6)
 
 
-            with col4:
-                property_inputs['deposit_usd'] = st.number_input('Deposit (USD)', min_value=0.0, format="%.2f")
-                property_inputs['cleaning_fee_usd'] = st.number_input('Cleaning Fee (USD)', min_value=0.0, format="%.2f")
-                property_inputs['extra_people_fee_usd'] = st.number_input('Extra People Fee (USD)', min_value=0.0, format="%.2f")
+            property_inputs['deposit_usd'] = st.number_input('Deposit (USD)', min_value=0.0, format="%.2f")
+            property_inputs['cleaning_fee_usd'] = st.number_input('Cleaning Fee (USD)', min_value=0.0, format="%.2f")
+            property_inputs['extra_people_fee_usd'] = st.number_input('Extra People Fee (USD)', min_value=0.0, format="%.2f")
 
             # Rental History Section
             format_title("Rental History - Last 12 Months", color='#0c6596')
-            col5, col6 = st.columns(2)
-            
-            with col5:
-                property_inputs['n_reviews_ltm'] = st.number_input('Number of Reviews', min_value=0, value=15)
-                property_inputs['available_days_ltm'] = st.number_input('Available Days', min_value=0, max_value=365, value = 100)
-                property_inputs['reservation_days_ltm'] = st.number_input('Reservation Days', min_value=0, max_value=365, value= 80)
-            
-            with col6:
-                property_inputs['blocked_days_ltm'] = st.number_input('Blocked Days', min_value=0, max_value=365, value=30)
-                property_inputs['n_bookings_ltm'] = st.number_input('Number of Bookings', min_value=0, value=80)
-                property_inputs['anual_revenue_usd'] = st.number_input('Anual Revenue (USD)', min_value=0.0, format="%.2f", value=3000.00)
-                property_inputs['occupancy_rate_ltm'] = st.slider('Occupancy Rate (%)', min_value=0.0, max_value=1.0, value=0.6)
 
             # Rating and Policies Section
             format_title("Rating and Policies", color='#0c6596')
@@ -857,16 +836,8 @@ elif model_choice == 'Predicting Price per Night':
                 'hot_water': 1 if 'Hot Water' in property_inputs['amenities'] else 0,
                 'elevator': 1 if 'Elevator' in property_inputs['amenities'] else 0,
                 'laptop-friendly': 1 if 'Laptop Friendly' in property_inputs['amenities'] else 0,
-                'n_reviews_ltm': property_inputs['n_reviews_ltm'],
-                'n_bookings_ltm': property_inputs['n_bookings_ltm'],
-                'available_days_ltm': property_inputs['available_days_ltm'],
-                'reservation_days_ltm': property_inputs['reservation_days_ltm'],
-                'blocked_days_ltm': property_inputs['blocked_days_ltm'],
-                'anual_revenue_usd': property_inputs['anual_revenue_usd'],
-                'occupancy_rate_ltm': property_inputs['occupancy_rate_ltm'],
                 'rating': property_inputs['rating'],
                 'policy_category': property_inputs['policy_category'],
-                'occupancy_rate': property_inputs['occupancy_rate']
             }
             # Convert the dictionary into a DataFrame
             new_property_df = pd.DataFrame([new_property_data])
@@ -909,38 +880,8 @@ elif model_choice == 'Predicting Price per Night':
             import streamlit as st
 
             # Load and prepare the data
-            df = pd.read_pickle('AIRBNB_PICKLE.pkl')
-            df_0 = df.loc[(df['adr_usd'] > 1) & 
-                (df['occupancy_rate'] > 0) & 
-                (df['occupancy_rate'] < 1) & 
-                (df['date_in'].str[5:7] == f"{property_inputs['month']:02}")]
-            df_0['adr_room'] = df_0['adr_usd'] / df_0['n_rooms'] 
-            df_0 = df_0.loc[ (df_0['adr_room'] <= 400)] # outliers en precio
-
-            df_0[['occupancy_rate_log', 'adr_usd_log', 'adr_room_log', 'n_rooms_log', 'n_bookings_log']] = np.log1p(df_0[['occupancy_rate', 
-                                                            'adr_usd', 'adr_room', 'n_rooms', 'n_bookings']])
-
-            cols_log = ['occupancy_rate_log', 'adr_usd_log', 'adr_room_log', 'n_rooms_log', 'n_bookings_log', 'property_subtype']
-            cols= ['occupancy_rate', 'adr_usd', 'adr_room', 'n_rooms', 'n_bookings', 'property_subtype']
-
-            # AGRUPANDO en moodo histograma de adr_room
-            df_0["labels"] = pd.cut(df_0["adr_room"], bins=1000, labels=False)
-            df_g = df_0.groupby(by=["property_subtype", "labels"]).agg({"adr_room":"mean", "occupancy_rate":["mean", "count"],
-                                                                    "adr_room_log":"mean", "occupancy_rate_log":"mean"}).reset_index()
-            df_g.columns = ["property_subtype", "labels", "Mean ADR room", "Mean Occupancy Rate", "Observations per Bin", 
-                        "Mean ADR room log", "Mean Occupancy Rate log"]
-            
-            # AGRUPANDO con tamalo de bin constante en adr_room
-
-            df_0 = df_0.sort_values(by=["adr_room"]).reset_index(drop=True)
-            df_0['label1k'] = df_0.index//500
-
-            df_g2 = df_0.groupby(by=["property_subtype", "label1k"]).agg({"adr_room":"mean", "occupancy_rate":["mean", "count"],
-                                                                    "adr_room_log":"mean", "occupancy_rate_log":"mean"}).reset_index()
-            df_g2.columns = ["property_subtype", "label1k", "Mean ADR room", "Mean Occupancy Rate", "Observations per Bin", 
-                        "Mean ADR room log", "Mean Occupancy Rate log"]
-            
-            tipo_analizado = property_inputs['property_subtype']
+            df_g2 = pd.read_pickle('AIRBNB_PICKLE.pkl')
+            tipo_analizado ="flat_house_room"
 
             df_aux = df_g2.loc[df_g2["property_subtype"]== tipo_analizado]
 
